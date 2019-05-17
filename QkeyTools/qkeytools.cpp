@@ -8,6 +8,9 @@ QkeyTools::QkeyTools(QWidget *parent) :
     ui(new Ui::QkeyTools)
 {
     ui->setupUi(this);
+
+    m_chineseWordLibPath = QGuiApplication::applicationDirPath() + "/chinesewordlib.db";
+
     this->InitProperty();
     this->InitForm();
     this->ChangeStyle();
@@ -30,12 +33,11 @@ void QkeyTools::Init(QkeyTools::Position position, QkeyTools::Style style, qint8
     // [0] 初始化动画设置
     initAnimation();
 
-    this->m_position = position;
-    this->m_style = style;
-    this->m_btnFontSize = btnFontSize;
-    this->m_labFontSize = labFontSize;
-    this->ChangeStyle();
-    this->ChangeFont();
+    // [1] 配置键盘界面
+    this->setBtnFontSize(btnFontSize);
+    this->setLabSize(labFontSize);
+    this->setStyle(style);
+    this->setPosition(position);
 }
 
 void QkeyTools::setPosition(qint8 _position)
@@ -56,6 +58,7 @@ void QkeyTools::setStyle(qint8 _style)
     if(_style!=m_style){
         m_style = static_cast<Style>(_style);
         emit styleChanged(m_style);
+        this->ChangeStyle();
     }
 }
 
@@ -64,15 +67,16 @@ QkeyTools::Style QkeyTools::style()
     return m_style;
 }
 
-void QkeyTools::setFontSize(qint8 size)
+void QkeyTools::setBtnFontSize(qint8 size)
 {
     if(m_btnFontSize!=size){
         m_btnFontSize = size;
-        emit fontSizeChanged(m_btnFontSize);
+        emit btnFontSizeChanged(m_btnFontSize);
+        this->ChangeFont();
     }
 }
 
-qint8 QkeyTools::fontSize()
+qint8 QkeyTools::btnFontSize()
 {
     return m_btnFontSize;
 }
@@ -82,6 +86,7 @@ void QkeyTools::setLabSize(qint8 size)
     if(size!=m_labFontSize){
         m_labFontSize = size;
         emit labSizeChanged(m_labFontSize);
+        this->ChangeFont();
     }
 }
 
@@ -129,6 +134,22 @@ QkeyTools::InputMode QkeyTools::inputMode()
     return m_inputMode;
 }
 
+void QkeyTools::setChineseWordLibPath(QString path)
+{
+    if(path!=m_chineseWordLibPath){
+        m_chineseWordLibPath = path;
+        QSqlDatabase DbConn;
+        DbConn = QSqlDatabase::addDatabase("QSQLITE");
+        DbConn.setDatabaseName(m_chineseWordLibPath);
+        DbConn.open();
+    }
+}
+
+QString QkeyTools::chineseWordLibPath()
+{
+    return m_chineseWordLibPath;
+}
+
 void QkeyTools::setMainWindowObject(QWidget *obj)
 {
     m_mainwindow = obj;
@@ -174,7 +195,7 @@ void QkeyTools::InitForm()
 
     QSqlDatabase DbConn;
     DbConn = QSqlDatabase::addDatabase("QSQLITE");
-    DbConn.setDatabaseName(ChineseWordLibPath);
+    DbConn.setDatabaseName(m_chineseWordLibPath);
     DbConn.open();
 
     isFirst = true;
@@ -590,11 +611,13 @@ void QkeyTools::focusChanged(QWidget *oldWidget, QWidget *nowWidget)
 
 void QkeyTools::changeType(InputMode type)
 {
-    switch (type) {
+    // 设置当前输入模式
+    setInputMode(type);
+
+    switch (m_inputMode) {
     case MIN:{
         changeLetter(false);
         ui->btnType->setText("小写");
-        //        ui->labInfo->setText("中文输入法--小写");
         ui->btnOther12->setText("/");
         ui->btnOther14->setText(":");
         ui->btnOther17->setText(",");
@@ -606,7 +629,6 @@ void QkeyTools::changeType(InputMode type)
     case MAX:{
         changeLetter(true);
         ui->btnType->setText("大写");
-        //        ui->labInfo->setText("中文输入法--大写");
         ui->btnOther12->setText("/");
         ui->btnOther14->setText(":");
         ui->btnOther17->setText(",");
@@ -618,7 +640,6 @@ void QkeyTools::changeType(InputMode type)
     case CHINESE:{
         changeLetter(false);
         ui->btnType->setText("中文");
-        //        ui->labInfo->setText("中文输入法--中文");
         ui->btnOther12->setText("。");
         ui->btnOther14->setText("：");
         ui->btnOther17->setText("，");

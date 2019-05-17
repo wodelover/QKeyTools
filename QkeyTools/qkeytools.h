@@ -41,12 +41,12 @@ class QKEYTOOLSSHARED_EXPORT QkeyTools : public QWidget
 
     Q_PROPERTY(qint8 position READ position WRITE setPosition NOTIFY positionChanged)
     Q_PROPERTY(qint8 style READ style WRITE setStyle NOTIFY styleChanged)
-    Q_PROPERTY(qint8 fontSize READ fontSize WRITE setFontSize NOTIFY fontSizeChanged)
+    Q_PROPERTY(qint8 fontSize READ btnFontSize WRITE setBtnFontSize NOTIFY btnFontSizeChanged)
     Q_PROPERTY(qint8 labSize READ labSize WRITE setLabSize NOTIFY labSizeChanged)
     Q_PROPERTY(quint16 width READ width WRITE setWidth NOTIFY widthChanged)
     Q_PROPERTY(quint16 height READ height WRITE setHeight NOTIFY heightChanged)
     Q_PROPERTY(qint8 inputMode READ inputMode WRITE setInputMode NOTIFY inputModeChanged)
-
+    Q_PROPERTY(QString chineseWordLibPath READ chineseWordLibPath WRITE setChineseWordLibPath)
 public:
     ~QkeyTools();
 
@@ -78,36 +78,47 @@ public:
     Q_ENUM(Style)
 
     //单例模式,保证一个程序只存在一个输入法实例对象
-        static QkeyTools *getInstance() {
-            if (!_instance) {
-                _instance = new QkeyTools;
-            }
-            return _instance;
+    static QkeyTools *getInstance() {
+        if (!_instance) {
+            _instance = new QkeyTools;
         }
-        static QObject* QkeyTools_singletontype_provider(QQmlEngine *engine, QJSEngine *scriptEngine);
+        return _instance;
+    }
+    static QObject* QkeyTools_singletontype_provider(QQmlEngine *engine, QJSEngine *scriptEngine);
 
     Q_INVOKABLE void Init(QkeyTools::Position position, QkeyTools::Style style, qint8 btnFontSize, qint8 labFontSize);
 
+    // 设置键盘显示位置
     Q_INVOKABLE void setPosition(qint8 _position);
     Q_INVOKABLE Position position();
 
+    // 设置键盘颜色样式
     Q_INVOKABLE void setStyle(qint8 _style);
     Q_INVOKABLE Style style();
 
-    Q_INVOKABLE void setFontSize(qint8 size);
-    Q_INVOKABLE qint8 fontSize();
+    // 设置按钮字体的大小
+    Q_INVOKABLE void setBtnFontSize(qint8 size);
+    Q_INVOKABLE qint8 btnFontSize();
 
+    // 设置待选字的大小
     Q_INVOKABLE void setLabSize(qint8 size);
     Q_INVOKABLE qint8 labSize();
 
+    // 设置键盘的宽度
     Q_INVOKABLE void setWidth(quint16 _width);
     Q_INVOKABLE quint16 width();
 
+    //  设置键盘的高度
     Q_INVOKABLE void setHeight(quint16 _height);
     Q_INVOKABLE quint16 height();
 
+    //  设置输入法方式
     Q_INVOKABLE void setInputMode(qint8 _mode);
     Q_INVOKABLE InputMode inputMode();
+
+    //  设置中文字库的路径
+    Q_INVOKABLE void setChineseWordLibPath(QString path);
+    Q_INVOKABLE QString chineseWordLibPath();
 
     /**
    * @name: setMainWindowObject
@@ -121,7 +132,7 @@ public:
 signals:
     void positionChanged(qint8 position);
     void styleChanged(qint8 style);
-    void fontSizeChanged(qint8 size);
+    void btnFontSizeChanged(qint8 size);
     void labSizeChanged(qint8 size);
     void widthChanged(quint16 width);
     void heightChanged(quint16 height);
@@ -152,7 +163,7 @@ private slots:
 private:
     Ui::QkeyTools *ui;
     explicit QkeyTools(QWidget *parent = nullptr);
-        static QkeyTools *_instance;     //实例对象
+    static QkeyTools *_instance;     //实例对象
 
     int deskWidth;                  //桌面宽度
     int deskHeight;                 //桌面高度
@@ -190,10 +201,11 @@ private:
     QWidget *m_mainwindow; // 主窗口对象，用于键盘BOTTOMTOP方式显示时使用
     QPropertyAnimation m_keyAnimation;  // 键盘动画
     QPropertyAnimation m_MainWindowAnimation;  //  主窗口动画
-//    QParallelAnimationGroup m_groupAnimation;   //  动画组
+    //    QParallelAnimationGroup m_groupAnimation;   //  动画组
     QRect m_mainwindowPosition; //用于记录主窗口的默认位置信息
-    bool m_isSetStyle = false;
-    bool m_ishide = false;
+    bool m_isSetStyle = false;  //用于记录是否已经设置了窗体的样式
+    bool m_ishide = false;  // 用于记录是否需要隐藏键盘
+    QString m_chineseWordLibPath;
 
     void insertValue(QString value);//插入值到当前焦点控件
     void deleteValue();             //删除当前焦点控件的一个字符
