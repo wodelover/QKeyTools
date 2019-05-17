@@ -28,9 +28,9 @@
 5.2、然后以子目录工程库的方式将 QkeyTools 添加到你的项目；
 5.3、在main.cpp中添加如下代码：
 （1）嵌入式平台：
-#include <QTextCodec>
-#include <qkeytools.h>
- int main(int argc, char *argv[])
+    #include <QTextCodec>
+    #include <qkeytools.h>
+    int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
