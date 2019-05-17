@@ -194,7 +194,7 @@ void QkeyTools::InitForm()
     deskHeight = w.availableGeometry().height();
 
     QSqlDatabase DbConn;
-    DbConn = QSqlDatabase::addDatabase("QSQLITE");
+    DbConn = QSqlDatabase::addDatabase("QSQLITE","QkeyTools");
     DbConn.setDatabaseName(m_chineseWordLibPath);
     DbConn.open();
 

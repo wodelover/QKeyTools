@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
     QkeyTools::getInstance()->setMainWindowObject(&w);
     QkeyTools::getInstance()->setWidth(1024);
     QkeyTools::getInstance()->setHeight(300);
-    QkeyTools::getInstance()->Init(QkeyTools::CONTROL, QkeyTools::LIGHTYELLOW, 20, 20);
+    QkeyTools::getInstance()->Init(QkeyTools::Embedded, QkeyTools::LIGHTYELLOW, 20, 20);
 
     return a.exec();
 }
