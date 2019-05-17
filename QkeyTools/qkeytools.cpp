@@ -139,7 +139,7 @@ void QkeyTools::setChineseWordLibPath(QString path)
     if(path!=m_chineseWordLibPath){
         m_chineseWordLibPath = path;
         QSqlDatabase DbConn;
-        DbConn = QSqlDatabase::addDatabase("QSQLITE");
+        DbConn = QSqlDatabase::addDatabase("QSQLITE","QkeyTools");
         DbConn.setDatabaseName(m_chineseWordLibPath);
         DbConn.open();
     }
@@ -673,7 +673,8 @@ void QkeyTools::changeLetter(bool isUpper)
 void QkeyTools::selectChinese()
 {
     clearChinese();
-    QSqlQuery query;
+    QSqlDatabase db2 = QSqlDatabase::database("QkeyTools");//连接键盘中文词库数据库
+    QSqlQuery query(db2);
     QString currentPY = ui->labPY->text();
     QString sql = "select [word] from [pinyin] where [pinyin]='" + currentPY + "';";
     query.exec(sql);
