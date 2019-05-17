@@ -13,21 +13,21 @@
    3.3、能够指定键盘的显示位置（提供按钮正下方、屏幕中间、屏幕底部）
    3.4、针对嵌入式平台的键盘显示方式；
   
-**4、效果实现：
+**4、效果实现：**
 4.1、中文键盘实现
 ![中文键盘](https://github.com/wodelover/QKeyTools/blob/master/chinese.png)
   
-**4.2、控件位置区域显示
+4.2、控件位置区域显示
 ![控件键盘](https://github.com/wodelover/QKeyTools/blob/master/control.png)
   
-**4.3、不同样式显示
+4.3、不同样式显示
 ![控件键盘](https://github.com/wodelover/QKeyTools/blob/master/style1.png)
 
-**5、如何使用：
+**5、如何使用：**
 5.1、首先下载 QkeyTools 这个模块；
 5.2、然后以子目录工程库的方式将 QkeyTools 添加到你的项目；
 5.3、在main.cpp中添加如下代码：
-**（1）嵌入式平台：
+（1）嵌入式平台：
 ```
 #include <QTextCodec>
 #include <qkeytools.h>
@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
     return a.exec();
 }
 ```
-**（2）windows或者linux平台
+（2）windows或者linux平台
 ```
 #include <QTextCodec>
 #include <qkeytools.h>
@@ -79,8 +79,8 @@ int main(int argc, char *argv[])
     return a.exec();
 }
 ```
-**备注： 两个平台最大的差异是嵌入式平台需要设置主程序句柄才可以正常运行，否则会出错，请格外注意
+**备注： 两个平台最大的差异是嵌入式平台需要设置主程序句柄才可以正常运行，否则会出错，请格外注意**
 ```QkeyTools::getInstance()->setMainWindowObject(&w);```
 
-**联系方式：543985125@qq.com
+**联系方式：543985125@qq.com**
 
