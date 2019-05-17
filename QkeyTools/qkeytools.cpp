@@ -476,7 +476,9 @@ void QkeyTools::keyAnimationFinished()
 
 void QkeyTools::windowAnimationFinished()
 {
-    m_mainwindow->update();
+    if(m_position==Position::Embedded){
+        m_mainwindow->update();
+    }
 }
 
 void QkeyTools::focusChanged(QWidget *oldWidget, QWidget *nowWidget)
@@ -897,15 +899,13 @@ void QkeyTools::initAnimation()
     m_keyAnimation.setDuration(AnimationTime);
 
     // [1] 设置主窗口动画属性
-    m_MainWindowAnimation.setTargetObject(m_mainwindow);
-    m_MainWindowAnimation.setPropertyName("geometry");
-    m_MainWindowAnimation.setDuration(AnimationTime);
-    //    m_groupAnimation.addAnimation(&m_MainWindowAnimation);
+    if(Position::Embedded==m_position){
+        m_MainWindowAnimation.setTargetObject(m_mainwindow);
+        m_MainWindowAnimation.setPropertyName("geometry");
+        m_MainWindowAnimation.setDuration(AnimationTime);
+    }
 
-    // [2] 设置动画组参数
-    //    m_groupAnimation.addAnimation(&m_keyAnimation);
-
-    // [3] 连接信号槽
+    // [2] 连接信号槽
     connect(&m_keyAnimation,SIGNAL(finished()),this,SLOT(keyAnimationFinished()));
     connect(&m_MainWindowAnimation,SIGNAL(finished()),this,SLOT(windowAnimationFinished()));
 }
@@ -940,8 +940,10 @@ void QkeyTools::hideAnimation()
 
 void QkeyTools::resetAllWidget()
 {
-    // [] 显示主程序默认位置
-    m_mainwindow->setGeometry(m_mainwindowPosition);
+    // [0] 显示主程序默认位置
+    if(Position::Embedded==m_position){
+        m_mainwindow->setGeometry(m_mainwindowPosition);
+    }
 
     // [1] 隐藏键盘
     this->setVisible(false);
