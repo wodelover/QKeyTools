@@ -150,6 +150,19 @@ QString QkeyTools::chineseWordLibPath()
     return m_chineseWordLibPath;
 }
 
+void QkeyTools::setMainwindowOffset(quint16 offset)
+{
+    if(m_mainwindowOffset!=offset){
+        m_mainwindowOffset = offset;
+        emit mainwindowOffsetChanged(m_mainwindowOffset);
+    }
+}
+
+quint16 QkeyTools::mainwindowOffset()
+{
+    return m_mainwindowOffset;
+}
+
 void QkeyTools::setMainWindowObject(QWidget *obj)
 {
     m_mainwindow = obj;
@@ -313,7 +326,10 @@ void QkeyTools::ShowPanel()
     if(m_position==Position::Embedded){
         // 在嵌入式平台中，点击界面会触发到主程序的控件，就会导致键盘被关闭
         // 如果是嵌入式平台则需要实现模态框运行，避免出现触摸不灵关闭
-        this->setWindowModality(Qt::ApplicationModal);
+//        this->setWindowModality(Qt::WindowModal);
+        // 实际测试，采用模态框运行也不行
+    }else{
+//        this->show();
     }
 
     int width = ui->btn0->width();
@@ -467,8 +483,6 @@ void QkeyTools::keyAnimationFinished()
 {
     if(m_ishide){
         this->setVisible(false);
-        // 取消模态框运行
-        this->setWindowModality(Qt::NonModal);
     }else {
         this->update();
     }
@@ -564,13 +578,11 @@ void QkeyTools::focusChanged(QWidget *oldWidget, QWidget *nowWidget)
             break;
         }
         case Embedded:{ //覆盖在主程序的底部
-
-            resetAllWidget();
-
             if(m_mainwindow==nullptr){
                 // 如果没有设置主程序对象
                 m_keyAnimation.setStartValue(QRect((deskWidth - m_width)/2,deskHeight,m_width, m_height));
                 m_keyAnimation.setEndValue(QRect((deskWidth - m_width)/2, deskHeight - m_height, m_width, m_height));
+                qDebug()<<__FILE__<<__LINE__<<"main window is nullptr on platform: Embedded";
                 showAnimation();
             }else{
                 // 用于保存主窗口对象的位置大小信息
@@ -586,7 +598,7 @@ void QkeyTools::focusChanged(QWidget *oldWidget, QWidget *nowWidget)
 
                 //  采用循环计算当前控件相对于主程序的位置
                 QWidget *temp = nowWidget;
-                int  nowControlYOffset = nowWidget->geometry().y();
+                int  nowControlYOffset = nowWidget->geometry().y() + m_mainwindowOffset;
                 while (temp->parent()) {
                     nowControlYOffset += static_cast<QWidget*>(temp->parent())->geometry().y();
                     temp = static_cast<QWidget*>(temp->parent());
@@ -765,8 +777,11 @@ void QkeyTools::btn_clicked()
     } else if (objectName == "btnClose") { // 点击关闭按钮
         if(m_position==Position::Embedded){
             hideAnimation();
+//            // 设置模态框运行
+//            this->setWindowModality(Qt::NonModal);
+
             // 设置焦点到主程序上，这样才能第二次点击的时候调用键盘
-            m_mainwindow->setFocus();
+            m_mainwindow->setFocus();    
         }else {
             this->setVisible(false);
         }
@@ -948,8 +963,6 @@ void QkeyTools::resetAllWidget()
 
     // [1] 隐藏键盘
     this->setVisible(false);
-    // 取消模态框运行
-    this->setWindowModality(Qt::NonModal);
 
     // [2] 设置主窗口的默认动画位置
     m_MainWindowAnimation.setStartValue(m_mainwindowPosition);

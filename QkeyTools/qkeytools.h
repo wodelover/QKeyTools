@@ -3,7 +3,6 @@
 
 #include "qkeytools_global.h"
 #include <QWidget>
-#include <QWidget>
 #include <QMouseEvent>
 #include <QLabel>
 #include <QLineEdit>
@@ -47,6 +46,8 @@ class QKEYTOOLSSHARED_EXPORT QkeyTools : public QWidget
     Q_PROPERTY(quint16 height READ height WRITE setHeight NOTIFY heightChanged)
     Q_PROPERTY(qint8 inputMode READ inputMode WRITE setInputMode NOTIFY inputModeChanged)
     Q_PROPERTY(QString chineseWordLibPath READ chineseWordLibPath WRITE setChineseWordLibPath)
+    Q_PROPERTY(quint16 mainwindowOffset READ mainwindowOffset WRITE setMainwindowOffset NOTIFY mainwindowOffsetChanged)
+
 public:
     ~QkeyTools();
 
@@ -120,6 +121,9 @@ public:
     Q_INVOKABLE void setChineseWordLibPath(QString path);
     Q_INVOKABLE QString chineseWordLibPath();
 
+    //  设置主窗口和软键盘的相对距离
+    Q_INVOKABLE void setMainwindowOffset(quint16 offset);
+    Q_INVOKABLE quint16 mainwindowOffset();
     /**
    * @name: setMainWindowObject
    * @descption: 用于键盘BOTTOMTOP方式显示时使用
@@ -137,6 +141,7 @@ signals:
     void widthChanged(quint16 width);
     void heightChanged(quint16 height);
     void inputModeChanged(qint8 mode);
+    void mainwindowOffsetChanged(quint16 offset);
 protected:
     //事件过滤器,处理鼠标在汉字标签处单击操作
     bool eventFilter(QObject *obj, QEvent *event);
@@ -206,6 +211,7 @@ private:
     bool m_isSetStyle = false;  //用于记录是否已经设置了窗体的样式
     bool m_ishide = false;  // 用于记录是否需要隐藏键盘
     QString m_chineseWordLibPath;
+    quint16 m_mainwindowOffset = 0;
 
     void insertValue(QString value);//插入值到当前焦点控件
     void deleteValue();             //删除当前焦点控件的一个字符
