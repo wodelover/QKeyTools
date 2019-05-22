@@ -30,14 +30,14 @@ QObject *QkeyTools::QkeyTools_singletontype_provider(QQmlEngine *engine, QJSEngi
 
 void QkeyTools::Init(QkeyTools::Position position, QkeyTools::Style style, qint8 btnFontSize, qint8 labFontSize)
 {
-    // [0] 初始化动画设置
-    initAnimation();
-
-    // [1] 配置键盘界面
+    // [0] 配置键盘界面
     this->setBtnFontSize(btnFontSize);
     this->setLabSize(labFontSize);
     this->setStyle(style);
     this->setPosition(position);
+
+    // [1] 初始化动画设置
+    initAnimation();
 }
 
 void QkeyTools::setPosition(qint8 _position)
