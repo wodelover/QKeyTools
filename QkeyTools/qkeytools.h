@@ -2,7 +2,7 @@
 #define QKEYTOOLS_H
 
 #include "qkeytools_global.h"
-#include <QWidget>
+#include <QDialog>
 #include <QMouseEvent>
 #include <QLabel>
 #include <QLineEdit>
@@ -34,7 +34,7 @@ namespace Ui {
 class QkeyTools;
 }
 
-class QKEYTOOLSSHARED_EXPORT QkeyTools : public QWidget
+class QKEYTOOLSSHARED_EXPORT QkeyTools : public QDialog
 {
     Q_OBJECT
 
@@ -167,7 +167,7 @@ private slots:
 
 private:
     Ui::QkeyTools *ui;
-    explicit QkeyTools(QWidget *parent = nullptr);
+    explicit QkeyTools(QDialog *parent = nullptr);
     static QkeyTools *_instance;     //实例对象
 
     int deskWidth;                  //桌面宽度

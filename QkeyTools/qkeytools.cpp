@@ -3,8 +3,8 @@
 #include "qdesktopwidget.h"
 
 QkeyTools *QkeyTools::_instance = nullptr;
-QkeyTools::QkeyTools(QWidget *parent) :
-    QWidget(parent),
+QkeyTools::QkeyTools(QDialog *parent) :
+    QDialog(parent),
     ui(new Ui::QkeyTools)
 {
     ui->setupUi(this);
@@ -322,14 +322,14 @@ void QkeyTools::InitProperty()
 
 void QkeyTools::ShowPanel()
 {
-    this->setVisible(true);
     if(m_position==Position::Embedded){
         // 在嵌入式平台中，点击界面会触发到主程序的控件，就会导致键盘被关闭
         // 如果是嵌入式平台则需要实现模态框运行，避免出现触摸不灵关闭
 //        this->setWindowModality(Qt::WindowModal);
         // 实际测试，采用模态框运行也不行
+        this->exec();
     }else{
-//        this->show();
+        this->show();
     }
 
     int width = ui->btn0->width();
@@ -482,7 +482,8 @@ void QkeyTools::reClicked()
 void QkeyTools::keyAnimationFinished()
 {
     if(m_ishide){
-        this->setVisible(false);
+//        this->setVisible(false);
+        this->close();
     }else {
         this->update();
     }
@@ -783,7 +784,8 @@ void QkeyTools::btn_clicked()
             // 设置焦点到主程序上，这样才能第二次点击的时候调用键盘
             m_mainwindow->setFocus();    
         }else {
-            this->setVisible(false);
+//            this->setVisible(false);
+            this->close();
         }
     } else if (objectName == "btnSpace") {
         insertValue(" ");
@@ -962,7 +964,8 @@ void QkeyTools::resetAllWidget()
     }
 
     // [1] 隐藏键盘
-    this->setVisible(false);
+//    this->setVisible(false);
+    this->close();
 
     // [2] 设置主窗口的默认动画位置
     m_MainWindowAnimation.setStartValue(m_mainwindowPosition);
