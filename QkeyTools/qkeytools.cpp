@@ -3,8 +3,8 @@
 #include "qdesktopwidget.h"
 
 QkeyTools *QkeyTools::_instance = nullptr;
-QkeyTools::QkeyTools(QDialog *parent) :
-    QDialog(parent),
+QkeyTools::QkeyTools(QWidget *parent) :
+    QWidget(parent),
     ui(new Ui::QkeyTools)
 {
     ui->setupUi(this);
@@ -322,16 +322,7 @@ void QkeyTools::InitProperty()
 
 void QkeyTools::ShowPanel()
 {
-    if(m_position==Position::Embedded){
-        // 在嵌入式平台中，点击界面会触发到主程序的控件，就会导致键盘被关闭
-        // 如果是嵌入式平台则需要实现模态框运行，避免出现触摸不灵关闭
-//        this->setWindowModality(Qt::WindowModal);
-        // 实际测试，采用模态框运行也不行
-        this->exec();
-    }else{
-        this->show();
-    }
-
+    this->setVisible(true);
     int width = ui->btn0->width();
     width = width > 40 ? width : 40;
     ui->btnPre->setMinimumWidth(width);
@@ -482,8 +473,7 @@ void QkeyTools::reClicked()
 void QkeyTools::keyAnimationFinished()
 {
     if(m_ishide){
-//        this->setVisible(false);
-        this->close();
+        this->setVisible(false);
     }else {
         this->update();
     }
