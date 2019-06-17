@@ -37,7 +37,7 @@ class QkeyTools;
 class QKEYTOOLSSHARED_EXPORT QkeyTools : public QWidget
 {
     Q_OBJECT
-
+#if (QT_VERSION >= QT_VERSION_CHECK(5,8,0))
     Q_PROPERTY(qint8 position READ position WRITE setPosition NOTIFY positionChanged)
     Q_PROPERTY(qint8 style READ style WRITE setStyle NOTIFY styleChanged)
     Q_PROPERTY(qint8 fontSize READ btnFontSize WRITE setBtnFontSize NOTIFY btnFontSizeChanged)
@@ -47,6 +47,7 @@ class QKEYTOOLSSHARED_EXPORT QkeyTools : public QWidget
     Q_PROPERTY(qint8 inputMode READ inputMode WRITE setInputMode NOTIFY inputModeChanged)
     Q_PROPERTY(QString chineseWordLibPath READ chineseWordLibPath WRITE setChineseWordLibPath)
     Q_PROPERTY(quint16 mainwindowOffset READ mainwindowOffset WRITE setMainwindowOffset NOTIFY mainwindowOffsetChanged)
+#endif
 
 public:
     ~QkeyTools();
@@ -85,6 +86,7 @@ public:
         }
         return _instance;
     }
+    #if (QT_VERSION >= QT_VERSION_CHECK(5,8,0))
     static QObject* QkeyTools_singletontype_provider(QQmlEngine *engine, QJSEngine *scriptEngine);
 
     Q_INVOKABLE void Init(QkeyTools::Position position, QkeyTools::Style style, qint8 btnFontSize, qint8 labFontSize);
@@ -124,6 +126,46 @@ public:
     //  设置主窗口和软键盘的相对距离
     Q_INVOKABLE void setMainwindowOffset(quint16 offset);
     Q_INVOKABLE quint16 mainwindowOffset();
+#endif
+#if (QT_VERSION < QT_VERSION_CHECK(5,8,0))
+     void Init(QkeyTools::Position position, QkeyTools::Style style, qint8 btnFontSize, qint8 labFontSize);
+
+    // 设置键盘显示位置
+     void setPosition(qint8 _position);
+     Position position();
+
+    // 设置键盘颜色样式
+     void setStyle(qint8 _style);
+     Style style();
+
+    // 设置按钮字体的大小
+     void setBtnFontSize(qint8 size);
+     qint8 btnFontSize();
+
+    // 设置待选字的大小
+    Q_INVOKABLE void setLabSize(qint8 size);
+    Q_INVOKABLE qint8 labSize();
+
+    // 设置键盘的宽度
+     void setWidth(quint16 _width);
+     quint16 width();
+
+    //  设置键盘的高度
+     void setHeight(quint16 _height);
+     quint16 height();
+
+    //  设置输入法方式
+     void setInputMode(qint8 _mode);
+     InputMode inputMode();
+
+    //  设置中文字库的路径
+     void setChineseWordLibPath(QString path);
+     QString chineseWordLibPath();
+
+    //  设置主窗口和软键盘的相对距离
+     void setMainwindowOffset(quint16 offset);
+     quint16 mainwindowOffset();
+#endif
     /**
    * @name: setMainWindowObject
    * @descption: 用于键盘BOTTOMTOP方式显示时使用
@@ -196,13 +238,13 @@ private:
 
     QString currentEditType;        //当前焦点控件的类型
 
-    Position m_position = Position::CONTROL;        //当前输入法面板位置类型
-    Style m_style = Style::GRAY;           //当前输入法面板样式
-    qint8 m_btnFontSize = 10;                //当前输入法面板按钮字体大小
-    qint8 m_labFontSize = 10;                //当前输入法面板标签字体大小
-    quint16 m_width = 800;                // 当前键盘的宽度
-    quint16 m_height = 250;               // 当前键盘的高度
-    InputMode m_inputMode = InputMode::MIN;  // 设置当前输入法的输入方式
+    Position m_position;        //当前输入法面板位置类型
+    Style m_style;           //当前输入法面板样式
+    qint8 m_btnFontSize;                //当前输入法面板按钮字体大小
+    qint8 m_labFontSize;                //当前输入法面板标签字体大小
+    quint16 m_width;                // 当前键盘的宽度
+    quint16 m_height;               // 当前键盘的高度
+    InputMode m_inputMode;  // 设置当前输入法的输入方式
     QWidget *m_mainwindow; // 主窗口对象，用于键盘BOTTOMTOP方式显示时使用
     QPropertyAnimation m_keyAnimation;  // 键盘动画
     QPropertyAnimation m_MainWindowAnimation;  //  主窗口动画
@@ -211,7 +253,7 @@ private:
     bool m_isSetStyle = false;  //用于记录是否已经设置了窗体的样式
     bool m_ishide = false;  // 用于记录是否需要隐藏键盘
     QString m_chineseWordLibPath;
-    quint16 m_mainwindowOffset = 0;
+    quint16 m_mainwindowOffset;
 
     void insertValue(QString value);//插入值到当前焦点控件
     void deleteValue();             //删除当前焦点控件的一个字符

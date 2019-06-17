@@ -4,7 +4,12 @@
 #
 #-------------------------------------------------
 
-QT       += gui sql qml widgets
+QT       += gui sql widgets
+
+#  配置Qt版本5.0以上的模块
+greaterThan(QT_MAJOR_VERSION, 4){
+    QT += qml
+}
 
 TARGET = QkeyTools
 TEMPLATE = lib

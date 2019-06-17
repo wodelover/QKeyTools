@@ -11,6 +11,15 @@ QkeyTools::QkeyTools(QWidget *parent) :
 
     m_chineseWordLibPath = QGuiApplication::applicationDirPath() + "/chinesewordlib.db";
 
+    m_inputMode = InputMode::MIN;
+     m_btnFontSize = 10;
+     m_labFontSize = 10;
+     m_width = 800;
+     m_height = 250;
+     m_mainwindowOffset = 10;
+     m_position = Position::CONTROL;
+     m_style = Style::GRAY;
+
     this->InitProperty();
     this->InitForm();
     this->ChangeStyle();
