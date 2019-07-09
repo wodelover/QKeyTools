@@ -331,6 +331,8 @@ void QkeyTools::InitProperty()
 
 void QkeyTools::ShowPanel()
 {
+    // 设置窗口最前显示，避免点到其他控件
+    this->raise();
     this->setVisible(true);
     int width = ui->btn0->width();
     width = width > 40 ? width : 40;
