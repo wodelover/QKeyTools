@@ -81,6 +81,7 @@ int main(int argc, char *argv[])
 ```
 **备注： 两个平台最大的差异是嵌入式平台需要设置主程序句柄才可以正常运行，否则会出错，请格外注意**
 ```QkeyTools::getInstance()->setMainWindowObject(&w);```
+```如果编译提示qml出错，则只需要把相关的qml代码删除也是可以运行的。（针对低版本的Qt）```
 
 **联系方式：543985125@qq.com**
 
