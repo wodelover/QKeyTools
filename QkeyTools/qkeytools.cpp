@@ -1,24 +1,25 @@
 #include "qkeytools.h"
 #include "ui_qkeytools.h"
-#include "qdesktopwidget.h"
+#include <QCoreApplication>
 
-QkeyTools *QkeyTools::_instance = nullptr;
+QkeyTools *QkeyTools::_instance = 0;
 QkeyTools::QkeyTools(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::QkeyTools)
 {
     ui->setupUi(this);
 
-    m_chineseWordLibPath = QGuiApplication::applicationDirPath() + "/chinesewordlib.db";
+    // [0] 需要将对应的中文字库拷贝到程序运行的相对路径下
+    m_chineseWordLibPath = QCoreApplication::applicationDirPath() + "/chinesewordlib.db";
 
-    m_inputMode = InputMode::MIN;
-     m_btnFontSize = 10;
-     m_labFontSize = 10;
-     m_width = 800;
-     m_height = 250;
-     m_mainwindowOffset = 10;
-     m_position = Position::CONTROL;
-     m_style = Style::GRAY;
+    m_inputMode = MIN;
+    m_btnFontSize = 10;
+    m_labFontSize = 10;
+    m_width = 800;
+    m_height = 250;
+    m_mainwindowOffset = 10;
+    m_position = CONTROL;
+    m_style = GRAY;
 
     this->InitProperty();
     this->InitForm();
@@ -29,14 +30,14 @@ QkeyTools::~QkeyTools()
 {
     delete ui;
 }
-
+#if (QT_VERSION >= QT_VERSION_CHECK(5,7,0))
 QObject *QkeyTools::QkeyTools_singletontype_provider(QQmlEngine *engine, QJSEngine *scriptEngine)
 {
-    Q_UNUSED(engine);
-    Q_UNUSED(scriptEngine);
+    Q_UNUSED(engine)
+    Q_UNUSED(scriptEngine)
     return getInstance();
 }
-
+#endif
 void QkeyTools::Init(QkeyTools::Position position, QkeyTools::Style style, qint8 btnFontSize, qint8 labFontSize)
 {
     // [0] 配置键盘界面
@@ -180,7 +181,7 @@ void QkeyTools::setMainWindowObject(QWidget *obj)
 
 void QkeyTools::mouseMoveEvent(QMouseEvent *e)
 {
-    if(m_position!=Position::Embedded){
+    if(m_position!=Embedded){
         if (mousePressed && (e->buttons() == Qt::LeftButton)) {
             this->move(e->globalPos() - mousePoint);
             e->accept();
@@ -190,7 +191,7 @@ void QkeyTools::mouseMoveEvent(QMouseEvent *e)
 
 void QkeyTools::mousePressEvent(QMouseEvent *e)
 {
-    if(m_position!=Position::Embedded){
+    if(m_position!=Embedded){
         if (e->button() == Qt::LeftButton) {
             mousePressed = true;
             mousePoint = e->globalPos() - this->pos();
@@ -201,7 +202,7 @@ void QkeyTools::mousePressEvent(QMouseEvent *e)
 
 void QkeyTools::mouseReleaseEvent(QMouseEvent *)
 {
-    if(m_position!=Position::Embedded){
+    if(m_position!=Embedded){
         mousePressed = false;
     }
 }
@@ -210,11 +211,18 @@ void QkeyTools::InitForm()
 {
     this->mousePressed = false;
     this->setWindowFlags(Qt::Tool | Qt::WindowStaysOnTopHint | Qt::FramelessWindowHint);
-    //    this->setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::Tool | Qt::WindowDoesNotAcceptFocus);
+
+#if (QT_VERSION < QT_VERSION_CHECK(5,0,0))
     QDesktopWidget w;
     deskWidth = w.availableGeometry().width();
     deskHeight = w.availableGeometry().height();
+#endif
 
+#if (QT_VERSION >= QT_VERSION_CHECK(5,0,0))
+    QScreen *screens = QGuiApplication::screens().first();
+    deskWidth= screens->availableSize().width();
+    deskHeight = screens->availableSize().height();
+#endif
     QSqlDatabase DbConn;
     DbConn = QSqlDatabase::addDatabase("QSQLITE","QkeyTools");
     DbConn.setDatabaseName(m_chineseWordLibPath);
@@ -331,7 +339,6 @@ void QkeyTools::InitProperty()
 
 void QkeyTools::ShowPanel()
 {
-    // 设置窗口最前显示，避免点到其他控件
     this->raise();
     this->setVisible(true);
     int width = ui->btn0->width();
@@ -429,10 +436,10 @@ bool QkeyTools::eventFilter(QObject *obj, QEvent *event)
                 return false;
             }
         } else if (keyEvent->key() == Qt::Key_CapsLock) {
-            if (m_inputMode != InputMode::MAX) {
-                setInputMode(InputMode::MAX);
+            if (m_inputMode != MAX) {
+                setInputMode(MAX);
             } else {
-                setInputMode(InputMode::MIN);
+                setInputMode(MIN);
             }
             changeType(m_inputMode);
             return true;
@@ -441,11 +448,11 @@ bool QkeyTools::eventFilter(QObject *obj, QEvent *event)
                 return false;
             }
             QString key;
-            if (m_inputMode == InputMode::CHINESE) {
+            if (m_inputMode == CHINESE) {
                 key = keyEvent->text();
-            } else if (m_inputMode == InputMode::MIN) {
+            } else if (m_inputMode == MIN) {
                 key = keyEvent->text().toLower();
-            } else if (m_inputMode == InputMode::MAX) {
+            } else if (m_inputMode == MAX) {
                 key = keyEvent->text().toUpper();
             }
             QList<QPushButton *> btn = this->findChildren<QPushButton *>();
@@ -492,13 +499,14 @@ void QkeyTools::keyAnimationFinished()
 
 void QkeyTools::windowAnimationFinished()
 {
-    if(m_position==Position::Embedded){
+    if(m_position==Embedded || m_position == ProcessBottom){
         m_mainwindow->update();
     }
 }
 
 void QkeyTools::focusChanged(QWidget *oldWidget, QWidget *nowWidget)
 {
+    Q_UNUSED(oldWidget)
     if (nowWidget != nullptr && !this->isAncestorOf(nowWidget)) {
         //在Qt5和linux系统中(嵌入式linux除外),当输入法面板关闭时,焦点会变成无,然后焦点会再次移到焦点控件处
         //这样导致输入法面板的关闭按钮不起作用,关闭后马上有控件获取焦点又显示.
@@ -515,7 +523,7 @@ void QkeyTools::focusChanged(QWidget *oldWidget, QWidget *nowWidget)
             currentLineEdit = static_cast<QLineEdit *>(nowWidget);
             currentEditType = "QLineEdit";
             ShowPanel();
-        } else if (nowWidget->inherits("QTextEdit")) {
+        }/* else if (nowWidget->inherits("QTextEdit")) {
             currentTextEdit = static_cast<QTextEdit *>(nowWidget);
             currentEditType = "QTextEdit";
             ShowPanel();
@@ -527,7 +535,7 @@ void QkeyTools::focusChanged(QWidget *oldWidget, QWidget *nowWidget)
             currentBrowser = static_cast<QTextBrowser *>(nowWidget);
             currentEditType = "QTextBrowser";
             ShowPanel();
-        } /*else if (nowWidget->inherits("QComboBox")) {
+        } else if (nowWidget->inherits("QComboBox")) {
             QComboBox *cbox = static_cast<QComboBox *>(nowWidget);
             //只有当下拉选择框处于编辑模式才可以输入
             if (cbox->isEditable()) {
@@ -591,7 +599,6 @@ void QkeyTools::focusChanged(QWidget *oldWidget, QWidget *nowWidget)
                 QRect mainwindowRec;
                 mainwindowRec = m_mainwindow->geometry();
                 int x = mainwindowRec.x();
-                int y = mainwindowRec.y();
                 int width = mainwindowRec.width();
                 int height = mainwindowRec.height();
 
@@ -615,12 +622,59 @@ void QkeyTools::focusChanged(QWidget *oldWidget, QWidget *nowWidget)
                     m_MainWindowAnimation.setEndValue(mainwindowRec);
                 }
 
-                m_keyAnimation.setStartValue(QRect(x +(width - m_width)/2, y + height, m_width, m_height));
-                m_keyAnimation.setEndValue(QRect(x +(width - m_width)/2, y + height - m_height, m_width, m_height));
+                //                m_keyAnimation.setStartValue(QRect(x +(width - m_width)/2, y + height, m_width, m_height));
+                //                m_keyAnimation.setEndValue(QRect(x +(width - m_width)/2, y + height - m_height, m_width, m_height));
+                m_keyAnimation.setStartValue(QRect((deskWidth - m_width)/2,deskHeight,m_width, m_height));
+                m_keyAnimation.setEndValue(QRect((deskWidth - m_width)/2, deskHeight - m_height, m_width, m_height));
                 showAnimation();
             }
             break;
         }
+        case ProcessBottom:{
+            if(m_mainwindow==nullptr){
+                // 如果没有设置主程序对象
+                m_keyAnimation.setStartValue(QRect((deskWidth - m_width)/2,deskHeight,m_width, m_height));
+                m_keyAnimation.setEndValue(QRect((deskWidth - m_width)/2, deskHeight - m_height, m_width, m_height));
+                qDebug()<<__FILE__<<__LINE__<<"main window is nullptr on platform: Embedded";
+                showAnimation();
+            }
+
+            //  获取当前选中控件的位置信息
+            int nowControlH = nowWidget->geometry().height();
+
+            //  采用循环计算当前控件相对于主程序的位置
+            QWidget *temp = nowWidget;
+            int  nowControlYOffset = nowWidget->geometry().y();
+            while (temp->parent()) {
+                nowControlYOffset += static_cast<QWidget*>(temp->parent())->geometry().y();
+                temp = static_cast<QWidget*>(temp->parent());
+            }
+            // 用于保存主窗口对象的位置大小信息
+            QRect mainwindowRec;
+            m_mainwindow->setGeometry(m_mainwindowPosition);
+            mainwindowRec = m_mainwindow->geometry();
+            int x = m_mainwindowPosition.x();
+            int width = m_mainwindowPosition.width();
+            int height = m_mainwindowPosition.height();
+
+            // 如果控件被键盘遮挡
+            nowControlYOffset = nowControlYOffset - temp->y();
+            if(nowControlYOffset > temp->height() - m_height){
+                int yy = m_height - nowControlYOffset + nowControlH + m_mainwindowOffset;
+//                qDebug()<<"yy:"<< yy ;
+                m_MainWindowAnimation.setStartValue(mainwindowRec);
+                m_MainWindowAnimation.setEndValue(QRect(x,
+                yy,width,height));
+            }else{
+//                qDebug()<<"aaaa" ;
+                m_MainWindowAnimation.setStartValue(m_mainwindowPosition);
+                m_MainWindowAnimation.setEndValue(m_mainwindowPosition);
+            }
+            m_keyAnimation.setStartValue(QRect(temp->x() + (temp->width() - m_width)/2,temp->y() + temp->height(),m_width, m_height));
+            m_keyAnimation.setEndValue(QRect(temp->x() + (temp->width() - m_width)/2,temp->y() + temp->height() - m_height + nowControlH, m_width, m_height));
+            showAnimation();
+        }
+            break;
         }
     }
 }
@@ -738,17 +792,17 @@ void QkeyTools::btn_clicked()
     QPushButton *btn = static_cast<QPushButton *>(sender());
     QString objectName = btn->objectName();
     if (objectName == "btnType") {
-        if (m_inputMode == InputMode::MIN) {
-            setInputMode(InputMode::MAX);
-        } else if (m_inputMode == InputMode::MAX) {
-            setInputMode(InputMode::CHINESE);
-        } else if (m_inputMode == InputMode::CHINESE) {
-            setInputMode(InputMode::MIN);
+        if (m_inputMode == MIN) {
+            setInputMode(MAX);
+        } else if (m_inputMode == MAX) {
+            setInputMode(CHINESE);
+        } else if (m_inputMode == CHINESE) {
+            setInputMode(MIN);
         }
         changeType(m_inputMode);
     } else if (objectName == "btnDelete") {
         //如果当前是中文模式,则删除对应拼音,删除完拼音之后再删除对应文本输入框的内容
-        if (m_inputMode == InputMode::CHINESE) {
+        if (m_inputMode == CHINESE) {
             QString txt = ui->labPY->text();
             int len = txt.length();
             if (len > 0) {
@@ -777,15 +831,15 @@ void QkeyTools::btn_clicked()
             showChinese();
         }
     } else if (objectName == "btnClose") { // 点击关闭按钮
-        if(m_position==Position::Embedded){
+        if(m_position==Embedded||m_position==ProcessBottom){
             hideAnimation();
-//            // 设置模态框运行
-//            this->setWindowModality(Qt::NonModal);
+            //            // 设置模态框运行
+            //            this->setWindowModality(Qt::NonModal);
 
             // 设置焦点到主程序上，这样才能第二次点击的时候调用键盘
-            m_mainwindow->setFocus();    
+            m_mainwindow->setFocus();
         }else {
-//            this->setVisible(false);
+            //            this->setVisible(false);
             this->close();
         }
     } else if (objectName == "btnSpace") {
@@ -797,7 +851,7 @@ void QkeyTools::btn_clicked()
             value = value.right(1);
         }
         //当前不是中文模式,则单击按钮对应text为传递参数
-        if (m_inputMode != InputMode::CHINESE) {
+        if (m_inputMode != CHINESE) {
             insertValue(value);
         } else {
             //中文模式下,不允许输入特殊字符,单击对应数字按键取得当前索引的汉字
@@ -918,7 +972,7 @@ void QkeyTools::initAnimation()
     m_keyAnimation.setDuration(AnimationTime);
 
     // [1] 设置主窗口动画属性
-    if(Position::Embedded==m_position){
+    if(Embedded==m_position || m_position == ProcessBottom){
         m_MainWindowAnimation.setTargetObject(m_mainwindow);
         m_MainWindowAnimation.setPropertyName("geometry");
         m_MainWindowAnimation.setDuration(AnimationTime);
@@ -932,7 +986,7 @@ void QkeyTools::initAnimation()
 void QkeyTools::showAnimation()
 {
     m_ishide = false;
-    if(m_position==Position::Embedded){
+    if(m_position==Embedded || m_position == ProcessBottom){
         m_MainWindowAnimation.setDirection(QAbstractAnimation::Forward);
         m_keyAnimation.setDirection(QAbstractAnimation::Forward);
         m_MainWindowAnimation.start();
@@ -946,7 +1000,7 @@ void QkeyTools::showAnimation()
 void QkeyTools::hideAnimation()
 {
     m_ishide = true;
-    if(m_position==Position::Embedded){
+    if(m_position==Embedded || m_position == ProcessBottom){
         m_MainWindowAnimation.setDirection(QAbstractAnimation::Backward);
         m_keyAnimation.setDirection(QAbstractAnimation::Backward);
         m_MainWindowAnimation.start();
@@ -960,12 +1014,12 @@ void QkeyTools::hideAnimation()
 void QkeyTools::resetAllWidget()
 {
     // [0] 显示主程序默认位置
-    if(Position::Embedded==m_position){
+    if(Embedded==m_position){
         m_mainwindow->setGeometry(m_mainwindowPosition);
     }
 
     // [1] 隐藏键盘
-//    this->setVisible(false);
+    //    this->setVisible(false);
     this->close();
 
     // [2] 设置主窗口的默认动画位置
