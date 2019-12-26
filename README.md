@@ -1,6 +1,8 @@
 # **QKeyTools**
 
 **1、此代码是基于Qt平台下的软件盘实现，适合用于Qt4和Qt5.8以下的Qt版本；**
+**注意：目前测试最低版本为Qt4.8.7，建议使用高版本的Qt**
+**注意：中文使用，需要将默认的中文字体库放在程序的同一级目录下才可以**
 
 **2、主要使用的场景：**<br>
   2.1、嵌入式平台；<br>
@@ -45,10 +47,17 @@ int main(int argc, char *argv[])
     QTextCodec::setCodecForCStrings(codec);
     QTextCodec::setCodecForTr(codec);
 #endif
+
+    // 设置键盘的字体大小
+    QFont sfont;
+    sfont.setPointSize(16);
+    qApp->setFont(sfont);
+
+    // 设置键盘的父对象、宽度、高度、以及默认的样式设置
     QkeyTools::getInstance()->setMainWindowObject(&w);
-    QkeyTools::getInstance()->setWidth(1024);
+    QkeyTools::getInstance()->setWidth(800);
     QkeyTools::getInstance()->setHeight(300);
-    QkeyTools::getInstance()->Init(QkeyTools::Embedded, QkeyTools::LIGHTYELLOW, 20, 20);
+    QkeyTools::getInstance()->Init(QkeyTools::BOTTOM, QkeyTools::GRAY, 10, 10);
 
     return a.exec();
 }
@@ -81,7 +90,6 @@ int main(int argc, char *argv[])
 ```
 **备注： 两个平台最大的差异是嵌入式平台需要设置主程序句柄才可以正常运行，否则会出错，请格外注意**
 ```QkeyTools::getInstance()->setMainWindowObject(&w);```
-```如果编译提示qml出错，则只需要把相关的qml代码删除也是可以运行的。（针对低版本的Qt）```
 
 **联系方式：543985125@qq.com**
 
