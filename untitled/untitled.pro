@@ -42,6 +42,5 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../QkeyTools/release/ -lQkeyTools
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../QkeyTools/debug/ -lQkeyTools
 else:unix: LIBS += -L$$OUT_PWD/../QkeyTools/ -lQkeyTools
-
 INCLUDEPATH += $$PWD/../QkeyTools
 DEPENDPATH += $$PWD/../QkeyTools

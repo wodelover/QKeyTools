@@ -1,5 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include <QTextCodec>
+#include <qkeytools.h>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
