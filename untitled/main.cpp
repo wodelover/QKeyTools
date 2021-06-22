@@ -23,7 +23,7 @@ int main(int argc, char *argv[])
     qApp->setFont(sfont);
 
     // 设置键盘的父对象、宽度、高度、以及默认的样式设置
-    QkeyTools::getInstance()->setMainWindowObject(&w);
+//    QkeyTools::getInstance()->setMainWindowObject(&w);
     QkeyTools::getInstance()->setWidth(800);
     QkeyTools::getInstance()->setHeight(300);
     QkeyTools::getInstance()->Init(QkeyTools::BOTTOM, QkeyTools::GRAY, 10, 10);

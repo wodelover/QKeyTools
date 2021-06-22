@@ -6,21 +6,6 @@
 
 QT       += gui sql widgets
 
-#  配置Qt版本5.8以上才可以使用qml模块
-#check Qt version
-QT_VERSION = $$[QT_VERSION]
-QT_VERSION = $$split(QT_VERSION, ".")
-QT_VER_MAJ = $$member(QT_VERSION, 0)
-QT_VER_MIN = $$member(QT_VERSION, 1)
-
-greaterThan(QT_VER_MAJ, 5) | greaterThan(QT_VER_MIN, 7) {
-        message(Qt版本大于5.7配置qml模块)
-        QT += qml
-}
-else{
-        message(Qt版本小于5.7)
-}
-
 TARGET = QkeyTools
 TEMPLATE = lib
 

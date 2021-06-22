@@ -14,11 +14,6 @@
 #include <QTimer>
 
 #include <QPropertyAnimation>
-#include <QParallelAnimationGroup>
-
-#if (QT_VERSION >= QT_VERSION_CHECK(5,7,0))
-#include <QQmlEngine>
-#endif
 
 #if (QT_VERSION < QT_VERSION_CHECK(5,0,0))
 #include <QDesktopWidget>
@@ -32,18 +27,8 @@
 #include <QScreen>
 #endif
 
-// 定义动画运行时间
+// define Animation Run time
 const qint16 AnimationTime = 50;
-
-#ifdef Q_OS_WIN
-// 设置中文词库路径
-const QString  ChineseWordLibPath = "chinesewordlib.db";
-#endif
-
-#ifdef Q_OS_UNIX
-// 设置中文词库路径
-const QString  ChineseWordLibPath = "/mnt/userdata/chinesewordlib.db";
-#endif
 
 namespace Ui {
 class QkeyTools;
@@ -52,6 +37,7 @@ class QkeyTools;
 class QKEYTOOLSSHARED_EXPORT QkeyTools : public QWidget
 {
     Q_OBJECT
+
 #if (QT_VERSION >= QT_VERSION_CHECK(5,7,0))
     Q_PROPERTY(qint8 position READ position WRITE setPosition NOTIFY positionChanged)
     Q_PROPERTY(qint8 style READ style WRITE setStyle NOTIFY styleChanged)
@@ -59,23 +45,34 @@ class QKEYTOOLSSHARED_EXPORT QkeyTools : public QWidget
     Q_PROPERTY(qint8 labSize READ labSize WRITE setLabSize NOTIFY labSizeChanged)
     Q_PROPERTY(quint16 width READ width WRITE setWidth NOTIFY widthChanged)
     Q_PROPERTY(quint16 height READ height WRITE setHeight NOTIFY heightChanged)
-    Q_PROPERTY(qint8 inputMode READ inputMode WRITE setInputMode NOTIFY inputModeChanged)
-    Q_PROPERTY(QString chineseWordLibPath READ chineseWordLibPath WRITE setChineseWordLibPath)
     Q_PROPERTY(quint16 mainwindowOffset READ mainwindowOffset WRITE setMainwindowOffset NOTIFY mainwindowOffsetChanged)
+    Q_PROPERTY(QString candidateWordsPath READ candidateWordsPath WRITE setCandidateWordsPath NOTIFY candidateWordsPathChanged)
+    Q_PROPERTY(Language currentLanguage READ currentLanguage WRITE setCurrentLanguage NOTIFY currentLanguageChanged)
 #endif
+
 public:
     ~QkeyTools();
 
-    enum Position{
+    enum Language {
+        English,
+        Capital,
+        Chinese,
+        Chinese_TW,
+        Chinese_HK
+    };
+    Q_ENUM(Language)
+
+    enum Position {
         CONTROL = 0, // 显示位置在控件的下方
         CENTER, //居中显示
         BOTTOM, //屏幕底部
         ProcessBottom,
         Embedded //同主程序显示位置对齐,嵌入式平台尽量设置此方式
     };
+    Q_ENUM(Position)
 
-    enum Style{
-        BLUE=0,             //淡蓝色
+    enum Style {
+        BLUE = 0,           //淡蓝色
         DEV,                    //dev风格
         BLACK,               //黑色
         BROWN,            //灰黑色
@@ -84,35 +81,20 @@ public:
         GRAY,                 //灰色
         LIGHTYELLOW    //浅黄色
     };
-
-    enum InputMode{
-        MIN = 0,        // 小写
-        MAX,              // 大写
-        CHINESE       // 中文
-    };
-
-    //单例模式,保证一个程序只存在一个输入法实例对象
-    static QkeyTools *getInstance() {
-        if (!_instance) {
-            _instance = new QkeyTools;
-        }
-        return _instance;
-    }
-
-#if (QT_VERSION >= QT_VERSION_CHECK(5,7,0))
-    Q_ENUM(Position)
     Q_ENUM(Style)
 
-    static QObject* QkeyTools_singletontype_provider(QQmlEngine *engine, QJSEngine *scriptEngine);
+    //单例模式,保证一个程序只存在一个输入法实例对象
+    static QkeyTools *getInstance();
+
 
     Q_INVOKABLE void Init(QkeyTools::Position position, QkeyTools::Style style, qint8 btnFontSize, qint8 labFontSize);
 
     // 设置键盘显示位置
-    Q_INVOKABLE void setPosition(qint8 _position);
+    Q_INVOKABLE void setPosition(qint8 position);
     Q_INVOKABLE Position position();
 
     // 设置键盘颜色样式
-    Q_INVOKABLE void setStyle(qint8 _style);
+    Q_INVOKABLE void setStyle(qint8 style);
     Q_INVOKABLE Style style();
 
     // 设置按钮字体的大小
@@ -124,73 +106,33 @@ public:
     Q_INVOKABLE qint8 labSize();
 
     // 设置键盘的宽度
-    Q_INVOKABLE void setWidth(quint16 _width);
+    Q_INVOKABLE void setWidth(quint16 width);
     Q_INVOKABLE quint16 width();
 
     //  设置键盘的高度
-    Q_INVOKABLE void setHeight(quint16 _height);
+    Q_INVOKABLE void setHeight(quint16 height);
     Q_INVOKABLE quint16 height();
 
     //  设置输入法方式
-    Q_INVOKABLE void setInputMode(qint8 _mode);
-    Q_INVOKABLE InputMode inputMode();
+    Q_INVOKABLE void setCurrentLanguage(Language language);
+    Q_INVOKABLE Language currentLanguage();
 
     //  设置中文字库的路径
-    Q_INVOKABLE void setChineseWordLibPath(QString path);
-    Q_INVOKABLE QString chineseWordLibPath();
+    Q_INVOKABLE void setCandidateWordsPath(QString path);
+    Q_INVOKABLE QString candidateWordsPath();
 
     //  设置主窗口和软键盘的相对距离
     Q_INVOKABLE void setMainwindowOffset(quint16 offset);
     Q_INVOKABLE quint16 mainwindowOffset();
-#endif
 
-#if (QT_VERSION < QT_VERSION_CHECK(5,7,0))
-    void Init(QkeyTools::Position position, QkeyTools::Style style, qint8 btnFontSize, qint8 labFontSize);
-
-    // 设置键盘显示位置
-    void setPosition(qint8 _position);
-    Position position();
-
-    // 设置键盘颜色样式
-    void setStyle(qint8 _style);
-    Style style();
-
-    // 设置按钮字体的大小
-    void setBtnFontSize(qint8 size);
-    qint8 btnFontSize();
-
-    // 设置待选字的大小
-    Q_INVOKABLE void setLabSize(qint8 size);
-    Q_INVOKABLE qint8 labSize();
-
-    // 设置键盘的宽度
-    void setWidth(quint16 _width);
-    quint16 width();
-
-    //  设置键盘的高度
-    void setHeight(quint16 _height);
-    quint16 height();
-
-    //  设置输入法方式
-    void setInputMode(qint8 _mode);
-    InputMode inputMode();
-
-    //  设置中文字库的路径
-    void setChineseWordLibPath(QString path);
-    QString chineseWordLibPath();
-
-    //  设置主窗口和软键盘的相对距离
-    void setMainwindowOffset(quint16 offset);
-    quint16 mainwindowOffset();
-#endif
     /**
-   * @name: setMainWindowObject
-   * @descption: 用于键盘BOTTOMTOP方式显示时使用
-   * 通过此函数可以实现键盘把主窗口位置往上移动
-   * @author: zhangh
-   * @date: 2019-05-14
-   * @param: [QObject] obj 主窗口对象
-   */
+    * @name: setMainWindowObject
+    * @descption: 用于键盘BOTTOMTOP方式显示时使用
+    * 通过此函数可以实现键盘把主窗口位置往上移动
+    * @author: zhangh
+    * @date: 2019-05-14
+    * @param: [QObject] obj 主窗口对象
+    */
     void setMainWindowObject(QWidget *obj);
 
 signals:
@@ -200,8 +142,10 @@ signals:
     void labSizeChanged(qint8 size);
     void widthChanged(quint16 width);
     void heightChanged(quint16 height);
-    void inputModeChanged(qint8 mode);
+    void currentLanguageChanged(Language language);
     void mainwindowOffsetChanged(quint16 offset);
+    void candidateWordsPathChanged(QString candidateWordsPath);
+
 protected:
     //事件过滤器,处理鼠标在汉字标签处单击操作
     bool eventFilter(QObject *obj, QEvent *event);
@@ -262,31 +206,32 @@ private:
     qint8 m_labFontSize;                //当前输入法面板标签字体大小
     quint16 m_width;                // 当前键盘的宽度
     quint16 m_height;               // 当前键盘的高度
-    InputMode m_inputMode;  // 设置当前输入法的输入方式
+    Language m_currentLanguage;
+    QString m_candidateWordsPath;
+    quint16 m_mainwindowOffset;
+
     QWidget *m_mainwindow; // 主窗口对象，用于键盘BOTTOMTOP方式显示时使用
     QPropertyAnimation m_keyAnimation;  // 键盘动画
     QPropertyAnimation m_MainWindowAnimation;  //  主窗口动画
-    //    QParallelAnimationGroup m_groupAnimation;   //  动画组
     QRect m_mainwindowPosition; //用于记录主窗口的默认位置信息
     bool m_isSetStyle ;  //用于记录是否已经设置了窗体的样式
     bool m_ishide ;  // 用于记录是否需要隐藏键盘
-    QString m_chineseWordLibPath;
-    quint16 m_mainwindowOffset;
+
 
     void insertValue(QString value);//插入值到当前焦点控件
     void deleteValue();             //删除当前焦点控件的一个字符
 
-    void changeType(InputMode type = MIN);  //改变输入法类型
+    void changeType(Language type = English);  //改变输入法类型
     void changeLetter(bool isUpper);//改变字母大小写
     /**
-   * @name: changeStyle
-   * @descption: 改变输入法面板样式
-   * @author: zhangh
-   * @date: 2019-05-16
-   * @param:  [widgetTopColor] [widgetBottomColor] [btnTopColor]  [btnBottomColor]  [btnBorderColor]  [textColor]
-   * @param:  [面板顶部颜色]   [面板底部颜色]     [按钮顶部颜色]     [按钮底部颜色]   [按钮边框颜色]  [文字颜色]
-   * @return:
-*/
+    * @name: changeStyle
+    * @descption: 改变输入法面板样式
+    * @author: zhangh
+    * @date: 2019-05-16
+    * @param:  [widgetTopColor] [widgetBottomColor] [btnTopColor]  [btnBottomColor]  [btnBorderColor]  [textColor]
+    * @param:  [面板顶部颜色]   [面板底部颜色]     [按钮顶部颜色]     [按钮底部颜色]   [按钮边框颜色]  [文字颜色]
+    * @return:
+    */
     void changeStyle(QString widgetTopColor, QString widgetBottomColor,
                      QString btnTopColor, QString btnBottomColor,
                      QString btnBorderColor, QString textColor);
@@ -296,10 +241,11 @@ private:
     QStringList currentPY;          //当前拼音链表
     int currentPY_index;            //当前拼音索引
     int currentPY_count;            //当前拼音数量
-    void selectChinese();           //查询汉字
-    void showChinese();             //显示查询到的汉字
-    void setChinese(int index);     //设置当前汉字
-    void clearChinese();            //清空当前汉字信息
+
+    void selectLanguage(Language language);         //查询汉字
+    void showCandidateWords();            //显示查询到的汉字
+    void setCandidateWords(int index);    //设置当前汉字
+    void clearCandidateWords();           //清空当前汉字信息
 
     void initAnimation();  // 初始化动画参数
     void showAnimation();  // 键盘出现动画
