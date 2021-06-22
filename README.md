@@ -91,5 +91,6 @@ int main(int argc, char *argv[])
 **备注： 两个平台最大的差异是嵌入式平台需要设置主程序句柄才可以正常运行，否则会出错，请格外注意**
 ```QkeyTools::getInstance()->setMainWindowObject(&w);```
 
-**联系方式：543985125@qq.com**
+**6、支持我**<br>
+![微信](https://github.com/wodelover/QKeyTools/blob/master/wechat.png)![支付宝](https://github.com/wodelover/QKeyTools/blob/master/paybao.png)<br>
 
