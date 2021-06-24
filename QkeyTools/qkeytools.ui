@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>250</height>
+    <width>1232</width>
+    <height>459</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -293,7 +293,13 @@
          </layout>
         </item>
         <item>
-         <widget class="QPushButton" name="btnPre">
+         <widget class="QPushButton" name="PageUpBtn">
+          <property name="maximumSize">
+           <size>
+            <width>40</width>
+            <height>16777215</height>
+           </size>
+          </property>
           <property name="focusPolicy">
            <enum>Qt::NoFocus</enum>
           </property>
@@ -306,7 +312,13 @@
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="btnNext">
+         <widget class="QPushButton" name="PageDownBtn">
+          <property name="maximumSize">
+           <size>
+            <width>40</width>
+            <height>16777215</height>
+           </size>
+          </property>
           <property name="focusPolicy">
            <enum>Qt::NoFocus</enum>
           </property>
@@ -319,7 +331,13 @@
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="btnClose">
+         <widget class="QPushButton" name="CloseBtn">
+          <property name="maximumSize">
+           <size>
+            <width>40</width>
+            <height>16777215</height>
+           </size>
+          </property>
           <property name="focusPolicy">
            <enum>Qt::NoFocus</enum>
           </property>
@@ -1020,7 +1038,7 @@
        </widget>
       </item>
       <item row="4" column="12" colspan="2">
-       <widget class="QPushButton" name="btnType">
+       <widget class="QPushButton" name="LanguageTypeBtn">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Ignored" vsizetype="Expanding">
           <horstretch>0</horstretch>
@@ -1196,7 +1214,7 @@
        </widget>
       </item>
       <item row="0" column="13">
-       <widget class="QPushButton" name="btnDelete">
+       <widget class="QPushButton" name="DeleteBtn">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Ignored" vsizetype="Expanding">
           <horstretch>0</horstretch>
@@ -1308,7 +1326,7 @@
        </widget>
       </item>
       <item row="4" column="9" colspan="2">
-       <widget class="QPushButton" name="btnSpace">
+       <widget class="QPushButton" name="SpaceBtn">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Ignored" vsizetype="Expanding">
           <horstretch>0</horstretch>

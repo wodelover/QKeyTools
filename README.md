@@ -92,5 +92,5 @@ int main(int argc, char *argv[])
 ```QkeyTools::getInstance()->setMainWindowObject(&w);```
 
 # **6、支持我**
-![微信](https://github.com/wodelover/QKeyTools/blob/master/wechat.png)<br>![支付宝](https://github.com/wodelover/QKeyTools/blob/master/paybao.png)<br>
+![微信](https://github.com/wodelover/QKeyTools/blob/master/wechat.png)![支付宝](https://github.com/wodelover/QKeyTools/blob/master/paybao.png)<br>
 

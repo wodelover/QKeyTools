@@ -63,27 +63,26 @@ public:
     Q_ENUM(Language)
 
     enum Position {
-        CONTROL = 0, // 显示位置在控件的下方
-        CENTER, //居中显示
-        BOTTOM, //屏幕底部
-        ProcessBottom,
-        Embedded //同主程序显示位置对齐,嵌入式平台尽量设置此方式
+        UnderWidget,           // 显示位置在控件的下方
+        ScreenCenter,          // 居中显示
+        ScreenBottom,          // 屏幕底部
+        ProcessBottom,         // 应用程序下方
+        Embedded               // 同主程序显示位置对齐,嵌入式平台尽量设置此方式
     };
     Q_ENUM(Position)
 
     enum Style {
-        BLUE = 0,           //淡蓝色
-        DEV,                    //dev风格
-        BLACK,               //黑色
-        BROWN,            //灰黑色
-        LIGHTGRAY,      //浅灰色
-        DARKGRAY,      //深灰色
-        GRAY,                 //灰色
-        LIGHTYELLOW    //浅黄色
+        BLUE = 0,        //淡蓝色
+        DEV,             //dev风格
+        BLACK,           //黑色
+        BROWN,           //灰黑色
+        LIGHTGRAY,       //浅灰色
+        DARKGRAY,        //深灰色
+        GRAY,            //灰色
+        LIGHTYELLOW      //浅黄色
     };
     Q_ENUM(Style)
 
-    //单例模式,保证一个程序只存在一个输入法实例对象
     static QkeyTools *getInstance();
 
 
@@ -148,25 +147,20 @@ signals:
 
 protected:
     //事件过滤器,处理鼠标在汉字标签处单击操作
-    bool eventFilter(QObject *obj, QEvent *event);
-    //鼠标拖动事件
-    void mouseMoveEvent(QMouseEvent *e);
-    //鼠标按下事件
-    void mousePressEvent(QMouseEvent *e);
-    //鼠标松开事件
-    void mouseReleaseEvent(QMouseEvent *);
+    virtual bool eventFilter(QObject *obj, QEvent *event) override;
+    virtual void mouseMoveEvent(QMouseEvent *e) override;
+    virtual void mousePressEvent(QMouseEvent *e) override;
+    virtual void mouseReleaseEvent(QMouseEvent *e) override;
+    virtual void showEvent(QShowEvent *event) override;
 
 private slots:
     //焦点改变事件槽函数处理
     void focusChanged(QWidget *oldWidget, QWidget *nowWidget);
     //输入法面板按键处理
-    void btn_clicked();
-
+    void handleButtonClicked();
     //定时器处理退格键
     void reClicked();
-
     void keyAnimationFinished();
-
     void windowAnimationFinished();
 
 private:
@@ -181,7 +175,7 @@ private:
     bool mousePressed;              //鼠标是否按下
 
     bool isPress;                   //是否长按退格键
-    QPushButton *btnPress;          //长按按钮
+    QPushButton *longPressBtn;          //长按按钮
     QTimer *timerPress;             //退格键定时器
     bool checkPress();              //校验当前长按的按钮
 
@@ -190,7 +184,7 @@ private:
     void InitProperty();            //初始化属性
     void ChangeStyle();             //改变样式
     void ChangeFont();              //改变字体大小
-    void ShowPanel();               //显示输入法面板
+    void ShowPanel(QWidget *nowWidget);               //显示输入法面板
 
     QWidget *currentWidget;         //当前焦点的对象
     QLineEdit *currentLineEdit;     //当前焦点的单行文本框
